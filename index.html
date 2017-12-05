@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="./static/css/index.css">
+</head>
+<body spellcheck="false">
+<div id="content">
+    <div id="board"></div>
+</div>
+<span id="pp3D">3D</span>
+<span id="compile">SL</span>
+<div id="blank-module"></div>
+<div id="tools">
+    <a data-type="div">div</a>
+    <a data-type="span">span</a>
+    <a data-type="p">p</a>
+    <a data-type="a">a</a>
+    <a data-type="input">input</a>
+    <a data-type="textarea">textarea</a>
+</div>
+<div id="attribute-board">
+    <a><span>样式</span></a>
+    <a><span>事件</span></a>
+    <a><span>属性</span></a>
+</div>
+<div id="editor-board" class="hide">
+    <div class="eb-title">
+        <span data-type="style" class="active">样式</span>
+        <span data-type="attribute">属性</span>
+        <span data-type="event">事件</span>
+    </div>
+    <div class="eb-content">
+        <div id="ebc-style" class="active">
+        </div>
+        <div id="ebc-attribute"></div>
+        <div id="ebc-event">
+            <div class="drawer">
+                <input type="checkbox">
+                <p class="drawer-name">click</p>
+                <div class="drawer-box">
+                    <div>
+                        <p><span class="function-name">fn1</span><span class="right">true</span></p>
+                        <p><span class="function-name">fn1</span><span class="right">true</span></p>
+                        <p><span class="function-name">fn1</span><span class="right">true</span></p>
+                        <p><span class="function-name">fn1</span><span class="right">true</span></p>
+                        <p><span class="function-name">fn1</span><span class="right">true</span></p>
+                    </div>
+                </div>
+            </div>
+            <div class="drawer">
+                <input type="checkbox">
+                <p class="drawer-name">click</p>
+                <div class="drawer-box">
+                    <div>
+                        <p><span class="function-name">fn1</span><span class="right">true</span></p>
+                        <p><span class="function-name">fn1</span><span class="right">true</span></p>
+                        <p><span class="function-name">fn1</span><span class="right">true</span></p>
+                        <p><span class="function-name">fn1</span><span class="right">true</span></p>
+                        <p><span class="function-name">fn1</span><span class="right">true</span></p>
+                    </div>
+                </div>
+            </div>
+            <div class="drawer">
+                <input type="checkbox">
+                <p class="drawer-name">click</p>
+                <div class="drawer-box">
+                    <div>
+                        <p><span class="function-name">fn1</span><span class="right">true</span></p>
+                        <p><span class="function-name">fn1</span><span class="right">true</span></p>
+                        <p><span class="function-name">fn1</span><span class="right">true</span></p>
+                        <p><span class="function-name">fn1</span><span class="right">true</span></p>
+                        <p><span class="function-name">fn1</span><span class="right">true</span></p>
+                    </div>
+                </div>
+            </div>
+            <div class="drawer">
+                <input type="checkbox">
+                <p class="drawer-name">click</p>
+                <div class="drawer-box">
+                    <div>
+                        <p><span class="function-name">fn1</span><span class="right">true</span></p>
+                        <p><span class="function-name">fn1</span><span class="right">true</span></p>
+                        <p><span class="function-name">fn1</span><span class="right">true</span></p>
+                        <p><span class="function-name">fn1</span><span class="right">true</span></p>
+                        <p><span class="function-name">fn1</span><span class="right">true</span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="eb-function">
+    <p><span>click</span><span>true</span></p>
+    <div id="text-editor">
+        <span id="number"><span id="number-c">1\n</span></span>
+        <div id="te-content" contenteditable="plaintext-only"></div>
+    </div>
+</div>
+<div id="color-board" class="hide">
+    <div id="color-detail">
+        <canvas id="backgroundColor" width="256" height="150"></canvas>
+        <span id="color-detail-slider"></span>
+    </div>
+    <div id="color-show">
+        <div id="color-circle"></div>
+        <div>
+            <div id="color-area">
+                <span id="color-slider"></span>
+            </div>
+            <div id="color-transparent">
+                <span id="color-transparent-slider"></span>
+            </div>
+        </div>
+    </div>
+    <div id="color-control">
+        <span id="color-value">
+            <span id="color-hex" data-type="hex" class="active">
+                <span>
+                    <a contenteditable="true"></a>
+                    <b>HEX</b>
+                </span>
+            </span>
+            <span id="color-rgba" data-type="rgb">
+                <span><a contenteditable="true"></a><b>R</b></span>
+                <span><a contenteditable="true"></a><b>G</b></span>
+                <span><a contenteditable="true"></a><b>B</b></span>
+                <span><a contenteditable="true"></a><b>A</b></span>
+            </span>
+            <span id="color-hsla" data-type="hsl">
+                <span><a contenteditable="true"></a><b>H</b></span>
+                <span><a contenteditable="true"></a><b>S</b></span>
+                <span><a contenteditable="true"></a><b>L</b></span>
+                <span><a contenteditable="true"></a><b>A</b></span>
+            </span>
+        </span>
+        <span id="color-switch"></span>
+    </div>
+</div>
+<div id="relative-board" class="hide">
+    <p>div#board</p>
+    <p>div#adfasf.asfasdfasdf asdfasdf asfasf</p>
+    <p>span#asfasfa.fasdfsdf</p>
+    <p>abcdefghijklmnopqrs</p>
+    <p>abcdefghijklmnopqrs</p>
+</div>
+<script type="text/javascript" src="./static/js/index.js"></script>
+</body>
+</html>

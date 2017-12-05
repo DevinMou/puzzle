@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        html{
+            color: #333;
+            font-size: 20px;
+            width: 100%;
+            height: 100%;
+        }
+        body{
+            width: 100%;
+            height: 100%;
+            background: #eee;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <h1 id="h1"></h1>
+</body>
+<script>
+    var b = document.body,h = document.getElementById('h1');
+    b.addEventListener('touchstart',function () {
+        h.innerText = 'start'
+    });
+    b.addEventListener('touchmove',function (e) {
+        var t = e.touches[0];
+        h.innerText = (t.pageX|0)+','+(t.pageY|0)
+    });
+    b.addEventListener('touchend',function () {
+        h.innerText = 'end'
+    })
+</script>
+</html>

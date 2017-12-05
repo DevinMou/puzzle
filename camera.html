@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<!--<input id="fileBtn" type="file" onchange="upload('#fileBtn', '#img');" accept="image/*" capture="camera"/>-->
+<input id="fileBtn" type="file" onchange="upload('#fileBtn', '#img');" accept="image/*" multiple/>
+<img src="" id="img"/>
+</body>
+<script>
+    var upload = function(c, d){
+        "use strict";
+        var $c = document.querySelector(c),
+            $d = document.querySelector(d),
+            file = $c.files[0],
+            reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = function(e){
+            $d.setAttribute("src", e.target.result);
+        };
+    };
+</script>
+</html>
