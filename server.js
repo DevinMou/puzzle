@@ -28,6 +28,7 @@ const server = http.createServer(function(req,res){
     }
     else {
         try {
+            console.log(pathname+'index.html');
             fs.accessSync(pathname +'index.html');
             pathname +='index.html'
         }
