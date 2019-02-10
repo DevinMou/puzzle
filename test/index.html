@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
+</head>
+<body>
+<div id="box"></div>
+<div id="styleSheets"></div>
+<script>
+
+    {
+        Array.prototype.insert = function(a,b){
+            this.splice(b,0,this[a]);this.splice((a>b?a+1:a),1);
+            return this
+        };
+        Array.prototype.add=function (x) {
+            if(this.indexOf(x)<0){
+                this.push(x)
+            }
+            return this
+        };
+        function insertSort(oldArr,newArr) {
+            //最大长度对比剩余长度可再优化
+            var oldObj={},newObj={},arr=[],_d=0,deleteArr=[],addArr=[],
+                box=[],u=false,l=0,best=[],_arr=[],finish=false,_i=0,last=[];
+            oldArr.forEach(function (o,i) {
+                oldObj[o]=i
+            });
+            newArr.forEach(function (o,i) {
+                if(!oldObj.hasOwnProperty(o)){
+                    addArr.push([i,o]);
+                    _d--
+                }else {
+                    newObj[o]=i+_d
+                }
+            });
+            _d=0;
+            oldArr.forEach(function (o,i) {
+                if(newObj.hasOwnProperty(o)){
+                    arr.push(newObj[o]);
+                    var x=newObj[o],n=i-_d;
+                    delete newObj[o];
+                    if(box.length){
+                        u&&(u=false);
+                        for(var _i=0;_i<box.length;_i++){
+                            var _b=box[_i];
+                            if(x>_b[_b.length-1][0]){
+                                _b.push([x,n]);
+                                !u&&(u = true);
+                            }else if(x>_b[0][0]){
+                                if(u){
+                                    u = false;
+                                    break;
+                                }
+                                var _a=[_b[0]];
+                                for(var m=1;m<_b.length;m++){
+                                    if(_b[m][0]<x){
+                                        _a.push(_b[m])
+                                    }else {
+                                        _a.push([x,n]);
+                                        box.unshift(_a);
+                                        break;
+                                    }
+                                }
+                                break;
+                            }else {
+                                if(u){
+                                    u = false;
+                                    break;
+                                }
+                                box.unshift([[x,n]]);
+                                break;
+                            }
+                        }
+                    }else {
+                        box.unshift([[x,n]])
+                    }
+                    _arr.push(x)
+                }else {
+                    deleteArr.push(i-_d);
+                    _d++;
+                    delete newObj[o];
+                }
+            });
+            box.forEach(function (y) {
+                if(y.length>=l){
+                    best = y;
+                    l = y.length
+                }
+            });
+            if(best[best.length-1][1]!==_arr.length-1&&!best[best.length]){
+                best[best.length]=[null,_arr.length,[]]
+            }
+            while (!finish){
+                var _this=best[_i],_prev=best[_i-1]||[,-1];
+                if(_this[2]===undefined){
+                    _this[2]=[]
+                }
+                if(_this[1]-_prev[1]===_this[2].length+1){
+                    if(_i===best.length-1){
+                        finish = true;
+                        continue;
+                    }
+                    _i++;
+                    continue;
+                }
+                var f=_prev[1]+1,_x=_arr[f],a,b,c,d;
+                if(_x<_this[0]||_x<_prev[0]){
+                    for(a=_i-1;a>=0;a--){
+                        c=best[a][1];
+                        best[a][1]++;
+                        if(a-1<0||_x>best[a-1][0]){
+                            b = best[a][2];
+                            if(b.length===0){
+                                b.push(_x);
+                                last.push([f,c]);
+                                _arr.insert(f,c);
+                            }else {
+                                for(d=0;d<b.length;d++){
+                                    if(_x>b[d]){
+                                        b.splice(d,0,_x);
+                                        last.push([f,c-d]);
+                                        _arr.insert(f,c-d);
+                                        break;
+                                    }else if(d===b.length-1){
+                                        b.push(_x);
+                                        last.push([f,c-d-1]);
+                                        _arr.insert(f,c-d-1);
+                                        break;
+                                    }
+                                }
+                            }
+                            break;
+                        }
+                    }
+                }else {
+                    for(a=_i;a<best.length-1;a++){
+                        c=best[a+1][1];
+                        best[a][1]--;
+                        if(_x<best[a+1][0]||best[a+1][0]===null){
+                            b = best[a+1][2];
+                            if(b.length===0){
+                                b.push(_x);
+                                last.push([f,c]);
+                                _arr.insert(f,c);
+                            }else {
+                                for(d=0;d<b.length;d++){
+                                    if(_x>b[d]){
+                                        b.splice(d,0,_x);
+                                        last.push([f,c-d]);
+                                        _arr.insert(f,c-d);
+                                        break;
+                                    }else if(d===b.length-1){
+                                        b.push(_x);
+                                        last.push([f,c-d-1]);
+                                        _arr.insert(f,c-d-1);
+                                        break;
+                                    }
+                                }
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+            _d=0;
+            return [deleteArr,last,addArr]
+        }
+    }
+
+    var tool={
+        type:function(a){
+            return /\[\w+\s+(\w+)]/.exec(({}).toString.call(a))[1]||'undefined'
+        },
+    };
+    var originalData={
+        body:{
+            attr:{},
+            children:[
+                ['h1',{data:{x:'this.data.a'},exist:'this.data.a',dataSource:'Base'}],
+                ['h2'],
+                ['l4']
+            ]
+        },
+        h1:{
+            componentData:{
+                x:true,
+                y:{},
+                d:[1,2,3],
+                c:'this.data.m.z.y'//_c:['m','z','y']
+            },
+            tag:'div',
+            attr:{
+                id:'"h1"',
+                className:'this.data.x  ? "active" : ""',
+                styles:'"position:relative"'
+            },
+            children:[
+                ['h3',{exist:'this.inherit.h3k  %2 === 0',loop:'this.data.d',index:'h3k',item:'h3v'}]
+            ]
+        },
+        h2:{
+            tag:'span',
+            text:'this.inherit.f'
+        },
+        h3:{
+            tag:'span',
+            attr:{
+                id:'this.inherit.h3v.uuid'
+            }
+        },
+        l4:{
+            tag:'div',
+            children:[
+
+            ]
+        }
+    };
+    var componentLibrary={
+        list:['cpt_01'],
+        dataStruct:{
+            cpt_01:{
+                a:'abc',b:[1,2,3,4],c:true
+            }
+        },
+        hub:{
+            cpt_01:{
+                tag:'div',
+                children:[
+                    ['d1'],
+                    ['s1']
+                ]
+            }
+        }
+    };
+    var stateData={
+        a:true,
+        b:'xxxx',
+        c:[1,2,3,4],
+        d:[{uuid:'x12'},{uuid:'j3s'},{uuid:'od3'},{uuid:'jg2'}]
+    };
+    var addrObject={};
+    var Base = function (site,parentSite) {
+        if(parentSite){
+            if(Base.Hub.hasOwnProperty(site)){
+                return Base.Hub[parentSite].breed(site)
+            }else {
+                return new Base.init(site)
+            }
+        }else {
+            if(Base.Hub.hasOwnProperty(site)){
+                return Base.Hub[site]
+            }else {
+                return new Base.init(site)
+            }
+
+        }
+    };
+    Base.body=document.getElementById('box');
+    Base.init = function (site) {
+        Object.defineProperties(this,{
+            _site:  {value:site},
+            _parent:{value:'Base',writable:true},
+            inherit:{value:{},writable:true},
+            breed:  {value:function (_site) {
+                        var _t;
+                        if(!Base.Hub.hasOwnProperty(_site)){
+                            _t = new Base.init(_site)
+                        }else if(Object.getPrototypeOf(!Base.Hub(_site).inherit) instanceof Object) {
+                            _t = Base.Hub(_site)
+                        }else {return false}
+                        _t._parent = this._site;
+                        Object.setPrototypeOf(_t.inherit,this.inherit);
+                        return _t
+                    }.bind(this)
+                }});
+        this.Hub[site] = this;
+        return this
+    };
+    Base.init.prototype.Hub=Base.Hub={};
+    /*
+    function analytic(site,parentSite,attr,str,addr,cnt,index,item) {
+
+        var type=tool.type(str);
+        if(type==='String'){
+            var re=/^(['"]).*\1$/,re_quotes=/((?!\[)['"])((?:(?:\\\\\1)|(?!\1).)*)(\1)/,_a=str.split(re_quotes),len=_a.length,cf=!!cnt;
+            if(!re.test(str)&&!/['"]/.test(_a[len-1])){
+                var match,obj=cnt||addr,fn,b=Base(site,parentSite),
+                    reg=/this\.(data|inherit)((?:\.(?:(?:[^\u0000-\u00FF\d]|[a-zA-Z_$])(?:[\w_$]|[^\u0000-\u00FF])*)|(?:\[(?:(['"])(?:(?:\\\\\3)|(?!\3).)*\3)|\d+]))+)/g,reg_copy=new RegExp(reg.valueOf());
+                for(var i=0;i<len;i++){//s1
+                    if(/^['"]$/.test(_a[i])){
+                        i+=2;
+                    }else {
+                        var _s1=[],_si=0;
+                        while((match=reg.exec(_a[i]))!==null){//s2
+                            _s1.push(_a[i].slice(_si,match.index));
+                            _si=reg.lastIndex;
+                            var m1,k,r1=/(?:\.([^.[]+))|(?:\[(?:(['"])((?:\\\\\2)|(?!\2).)*\2)|(\d+)])/g,
+                            r1_copy=new RegExp(r1.valueOf());
+                            k=null;
+                            m1=r1.exec(match[2]);
+                            obj=cnt||addr;
+                            while (m1!==null){
+                                m1&&(k=m1[1]||m1[3]||m1[4]);
+                                m1=r1.exec(match[2]);
+                                if(obj instanceof Object){
+                                    if(tool.type(obj[k])==='String'&&!re.test(obj[k])){
+                                        var _v=obj[k],m3,m4,k1,eq=false;
+                                        while ((m3=reg_copy.exec(_v))!==null){
+                                            m3[0].length===_v.length&&(eq=true);
+                                            obj=addr;
+                                            while ((m4=r1_copy.exec(m3[2]))!==null){
+                                                k1=m4[1]||m4[3]||m4[4];
+                                                if(obj[k1]===undefined){
+                                                    obj[k1]={}
+                                                }
+                                                obj=obj[k1]
+                                            }
+                                            cf=false;
+                                            if(!eq&&obj[k1] instanceof Object){
+                                                cf=true;
+                                                if(!obj[k1].hasOwnProperty('_mapping')){
+                                                    Object.defineProperty(obj[k1],'_mapping',{value:{}})
+                                                }
+                                                if(attr==='loop'){
+                                                    if(!obj[k1].hasOwnProperty('_loop')){
+                                                        Object.defineProperty(obj[k1],'_loop',{value:{}})
+                                                    }
+                                                    obj[k1]._loop.index=index||'index';
+                                                    obj[k1]._loop.item=item||'item';
+                                                }
+                                                obj[k1]['_mapping'][site]===undefined&&(obj[k1]['_mapping'][site]=[]);
+                                                obj[k1]['_mapping'][site].add(attr);
+                                            }
+                                        }
+                                        if(!eq){
+                                            _s1.push('('+_v+')');
+                                            continue;
+                                        }else {
+                                            _s1.push(_v)
+                                        }
+                                    }else if(!obj.hasOwnProperty(k)){
+                                            obj[k]={};
+                                            obj=obj[k]
+                                    }
+                                    else {
+                                        _s1.push(obj[k]+'');
+                                        break;
+                                    }
+                                    if(m1===null&&!cf){
+                                        if(!obj.hasOwnProperty('_mapping')){
+                                            Object.defineProperty(obj,'_mapping',{
+                                                value:{}
+                                            })
+                                        }
+                                        obj['_mapping'][site]===undefined&&(obj['_mapping'][site]=[]);
+                                        obj['_mapping'][site].add(attr);
+                                    }
+                                }else if(tool.type(obj)==='String') {
+                                        _s1.push('["'+k+'"]')
+                                }else {
+                                    break;
+                                }
+                            }
+                        }
+                        _s1.push(_a[i].slice(_si));
+                        if(cnt&&_s1.length){
+                            _a[i]=_s1.join('')
+                        }
+                    }
+                }
+                fn= new Function('   var _t=this.inherit,v;' +
+                    'if(inherit instanceof Object){' +
+                    'Object.setPrototypeOf(inherit,this.inherit);' +
+                    'this.inherit = inherit' +
+                    '}' +
+                    'v = new Function(\'return '+_a.join('')+'\').bind(this)();' +
+                    'this.inherit = _t;' +
+                    'return v','inherit');
+                b[attr]=fn;
+                if(attr==='loop'){
+                    b.inherit[index]=null;
+                    b.inherit['_'+item]=obj;
+                    Object.defineProperty(b.inherit,item,{
+                        get:function () {
+                            return fn()[this.inherit[index]]
+                        }.bind(b)
+                    })
+                }
+            }
+            else {
+                return str.replace(/^(['"])(.*)\1$/,'$2')
+            }
+        }else {
+            return str
+        }
+    }
+    */
+    /**
+     *@return {*}
+     */
+    //componentData 解析
+
+
+    function A(str,b,attr,arr) {
+        //***arr:二次路径组
+        //***b:data路径参数组
+        //***addr:映射参数对象
+        /*
+        addr:{
+                node:[obj](节点对象),
+                parentSite:[str](父节点位号),
+                site:[str](本节点位号),
+                attr:[str](属性名),
+                addr:[obj](映射表对象),
+                index:[str](遍历索引名),
+                item:[str](遍历值名)
+              }
+        */
+        var r=/([\[\]])|(?:(['"])(?:(?:(?:\\\\\2)|(?!\2).)*)(?:\2))|(?:this(?:(?:\.(data|inherit))|(?:\[(['"])(data|inherit)\4]))([.[]))/,m,_s='',f=true,q=0,exp=false,first=typeof str!=='object',os=!first?str:{s:str},single=false;
+        A.attr=attr;
+        first&&arr&&(arr=[]);
+        m=r.exec(os.s);
+        while(m!==null){
+            _s+=os.s.slice(0,m.index);
+            os.s=os.s.slice(m.index+m[0].length);
+            if(m[1]==='['){
+                q++;
+                _s+='['
+            }
+            else if(m[1]===']'){
+                if(q===0){
+                    f=false;
+                    break;
+                }else {
+                    q--;
+                    _s+=']'
+                }
+            }
+            else if(m[2]!==undefined){
+                _s+=m[0]
+            }
+            else {
+                var head=m[3]||m[5];
+                if(head==='data'){
+                    var k=[],v;
+                    keyDeal(os,m[6],k,arr);
+                    if(first&&_s.length===0&&os.s.length===0){
+                        single=true;
+                    }
+                    v=SourceDeal(k,arr);
+                    if(v[0]){
+                        exp=true;
+                    }
+                    _s+=v[1]
+                }else {
+
+                }
+
+            }
+            m=r.exec(os.s);
+        }
+        f&&(_s+=os.s);
+        if(!exp&&b){
+            _s=new Function('return '+_s)();
+            ({}).toString.call(_s)==='[object String]'&&(_s='"'+_s+'"')
+        }
+        first&&(os=null);
+        if(first&&arr){
+            return [single,arr]
+        }else {
+            return [exp,_s];
+        }
+    }
+    A.init=function (a) {
+        A.addr=a;
+        A.node=null;
+    };
+    /**
+     *@return {*}
+     */
+    function SourceDeal(a,arr) {
+        var addr=A.addr;
+        if(arr){
+            var _arr=[],_str='this.data';
+            a.forEach(function (v) {
+               _arr.push(v[1]);
+               _s+='['+v[1]+']'
+            });
+            arr.push(_arr);
+            return [true,_str]
+        }
+        else {
+            !A.node&&(A.node=Base(addr.site,addr.parentSite));
+            if (A.node.source) {
+                var _o = Base(A.node.source).componentData, b = false, _s = '', tp,_a=[],_ts=[],to=[_o],_to,_ta;
+                a.forEach(function (kv) {//eg:a=[[false,'a'],[false,'b'],[true,'inherit'],[false,'c']]
+                    var tk = kv[0],k=kv[1];//[0]===true?含变量
+                    if(addr){
+                        if(_ts.length){
+                            _ts.forEach(function (_a) {
+                                _a.push(tk?'inherit':k)
+                            })
+                        }
+                        if(to.length){
+                            _to=[];
+                            to.forEach(function (vo,io) {
+                                if(tk){
+                                    Object.keys(vo).forEach(function (_k) {//?forEach
+                                        var _v=vo[_k],_t=typeof _v;
+                                        if(_t==='object'){
+                                            _to.push(_v)
+                                        }else if(_t==='string'){
+                                            _ta=A(_o[_k],false,false,true);
+                                            if(_ta[1].length){
+                                                if(_ta[0]){
+                                                    _ts=_ts.concat(_ta[1])
+                                                }else {
+                                                    _a=_a.concat(_ta[1])
+                                                }
+                                            }
+                                        }
+                                    });
+                                }
+                                else {
+                                    var _k=k.slice(1,-1);
+                                    if(vo.hasOwnProperty(_k)){
+                                        var _v=vo[_k],_t=typeof _v;
+                                        if(_t==='object'){
+                                            _to.push(_v)
+                                        }else if(_t==='string'){
+                                            _ta=A(_o[_k],false,false,true);
+                                            if(_ta[1].length){
+                                                if(_ta[0]){
+                                                    _ts=_ts.concat(_ta[1])
+                                                }else {
+                                                    _a=_a.concat(_ta[1])
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            });
+                            to=_to;
+                        }
+                    }
+                    //_a:[[a,b,c],[a,inherit,e],[d]]
+                    if (tk) {
+                        if (typeof _o === 'object') {
+                            _s += _o = JSON.stringify(_o).replace(/(:?)(")((?:(?:\\")|(?!").)*)(")/g, function (v0, v1, v2, v3) {
+                                    if (v1 === ':') {
+                                       /* var m = /^\\(".*)\\(")$/.exec(v3);
+                                        if (m !== null) {
+                                            return v1 + m[1] + m[2]
+                                        } else {*/
+                                            return v1 + v3
+                                        //}
+                                    } else {
+                                        return v0
+                                    }
+                                }).replace(/\\"/g,'"') + '[' + k + ']';
+                        } else {
+                            _s = _o = _o + '[' + k + ']'
+                        }
+                        b = true
+                    }
+                    else {
+                        tp = typeof _o;
+                        var _k=k.slice(1,-1);
+                        if (tp === 'object') {
+                            if (_o.hasOwnProperty(_k)) {
+                                var v = _o[_k], t = tool.type(v);
+                                if (t === 'String' && !/^".*"$/.test(v)) {
+                                    b = true
+                                }
+                                _s = _o = v
+                            } else {
+                                //error
+                            }
+                        }
+                        else if (tp === 'string') {
+                            _s = _o = _o + '[' + k + ']'
+                        }
+                        else {
+                            //error
+                        }
+                    }
+                });
+                if(addr){
+                    var _k,_oa,len,site=addr.site,attr=addr.attr;
+                    _ts.concat(_a).forEach(function (v,i) {
+                        _oa=addr.addr;
+                        len=v.length;
+                        v.forEach(function (vv, _i) {
+                            if(/^"(?:(?:\\\\")|(?!").)*"$/.test(vv)){
+                                _k=vv.slice(1,-1);
+                                if(_oa.hasOwnProperty(_k)){
+                                    _oa=_oa[_k]
+                                }else {
+                                    _oa=_oa[_k]={};
+                                }
+                            }
+                            else {
+                                if(_oa.hasOwnProperty('_inherit')){
+                                    _oa=_oa['_inherit']
+                                }else {
+                                    Object.defineProperty(_oa,'_inherit',{
+                                        value:{}
+                                    });
+                                    _oa=_oa['_inherit'];
+                                }
+                            }
+                            if(_i===len-1){
+                                !_oa.hasOwnProperty('_mapping')&&Object.defineProperty(_oa,'_mapping',{value:{}});
+                                _oa['_mapping'][site]===undefined&&(_oa['_mapping'][site]=[]);
+                                _oa['_mapping'][site].add(attr);
+                            }
+                        })
+                    })
+                }
+                if (!b) {
+                    return [false,_s]
+                } else {
+                    return [true, _s]
+                }
+            }
+            else {
+                b = false;_s = 'this.data';_a=[];_ts=[];
+                if(addr){
+                    site=addr.site;
+                    attr=addr.attr;
+                    _oa=addr.addr;
+                    len=a.length;
+                    var vv;
+                    a.forEach(function (v,_i) {
+                        vv=v[1];
+                        v[0]&&(b=true);
+                        _s+='['+vv+']';
+                        if(/^"(?:(?:\\\\")|(?!").)*"$/.test(vv)){
+                            _k=vv.slice(1,-1);
+                            if(_oa.hasOwnProperty(_k)){
+                                _oa=_oa[_k]
+                            }else {
+                                _oa=_oa[_k]={};
+                            }
+                        }
+                        else {
+                            if(_oa.hasOwnProperty('_inherit')){
+                                _oa=_oa['_inherit']
+                            }else {
+                                Object.defineProperty(_oa,'_inherit',{
+                                    value:{}
+                                });
+                                _oa=_oa['_inherit'];
+                            }
+                        }
+                        if(_i===len-1){
+                            !_oa.hasOwnProperty('_mapping')&&Object.defineProperty(_oa,'_mapping',{value:{}});
+                            _oa['_mapping'][site]===undefined&&(_oa['_mapping'][site]=[]);
+                            _oa['_mapping'][site].add(attr);
+                        }
+                    })
+                }
+                if (!b) {
+                    return [true,_s]
+                } else {
+                    return [true, _s]
+                }
+            }
+        }
+    }
+    function keyDeal(os,c,k,arr) {
+        if(c===undefined){
+            if((c=/^([.[]?)/.exec(os.s))!==null){
+                os.s=os.s.slice(c[0].length);
+                c=c[1]
+            }else {
+                c=''
+            }
+        }
+        if(c==='.'){
+            var re=/((?:[^\u0000-\u00FF\d]|[a-zA-Z_$])(?:[\w_$]|[^\u0000-\u00FF])*)([.[]?)/,m=re.exec(os.s);
+            if(m!==null){
+                os.s=os.s.slice(m[0].length);
+                k.push([false,'"'+m[1]+'"']);
+                keyDeal(os,m[2],k,arr);
+            }
+        }else if(c==='['){
+            //Todo
+            k.push(A(os,k,arr));
+            keyDeal(os,undefined,k,arr);
+        }else {
+            //console.log(k)
+        }
+    }
+
+    function getSourceDom(temp,site) {
+        var b=Base.Hub[site],_tn;
+        if(!temp[site]){
+            temp[site]=b.componentSite?getSourceDom(temp,b.componentSite):Base.body;
+        }
+        _tn=temp[site];
+        b.nodePath.forEach(function (v, k) {
+            var _n=v[0];
+            for(var i=1;i<v.length;i++){
+                _n+=Base.Hub[v[i]].num||1
+            }
+            _tn=_tn.childNodes[_n]
+        });
+        return _tn
+
+    }
+
+    function getValue(v,s,h) {
+        return v instanceof Function?v.bind(s)(h):v
+    }
+
+    function mapping(state,data,addr,table) {
+        var re=/^((?:\.(?:(?:[^\u0000-\u00FF\d]|[a-zA-Z_$])(?:[\w_$]|[^\u0000-\u00FF])*)|(?:\[(?:(['"])(?:(?:\\\\\2)|(?!\2).)*\2)|\d+]))+)$/,
+        re1=/(?:\.([^.[]+))|(?:\[(?:(['"])((?:\\\\\2)|(?!\2).)*\2)|(\d+)])/g,m,inherit={};
+        if(state instanceof Object){
+            Object.keys(state).forEach(function (k) {
+                if(re.test(k)){
+                    var obj=addr,_k;
+                    while ((m=re1.exec(k))!==null){
+                        _k=m[1]||m[3]||m[4];
+                        obj=obj[_k];
+                        if(/\d+/.test(_k)&&obj.hasOwnProperty('_loop')){
+                            inherit[obj._loop.index]=_k;
+                        }
+                    }
+                }else if(addr.hasOwnProperty(k)){
+
+                }else {
+
+                }
+            })
+        }
+    }
+    var _inherit={};
+    {
+        (function init(oD,sD,aO) {
+            var dF=document.createDocumentFragment();
+            /*
+            function explain(k,v,site,cnt,parentSite,inherit,dataSource) {
+                var t,b;
+                if(v!==undefined){
+                    t=A;
+                    if(tool.type(t)==='Function'){
+                        b=Base(site,parentSite);
+                        if(inherit){
+                            b.inherit[k]=t;
+                        }else {
+                            b[k]=t
+                        }
+                        return t.bind(sD)()
+                    }else {
+                        return t;
+                    }
+                }else {
+                    return undefined
+                }
+            }
+            */
+            function str2Fn(str) {
+                try{
+                    return new Function('return '+str)
+                }catch(err){
+                    return undefined
+                }
+            }
+            function domAddAttr(parentExist,componentSite,pDom,site,index,arg,a,inherit) {
+                pDom=pDom||Base.body;
+                parentExist=parentExist&&(a.exist===undefined?true:getValue(a.exist,sD,inherit));
+                if(parentExist&&arg.tag){
+                    index!==null&&a.loopArray.push(index);
+                    var _dom=document.createElement(arg.tag);
+                    Object.keys(a.attribute).forEach(function (k) {
+                        var v=a.attribute[k],_v=v instanceof Function?v.bind(sD)(inherit):v;
+                        _dom.setAttribute(k,_v)
+                    });
+                    pDom.appendChild(_dom);
+                }
+                _dom=arg.tag?_dom:pDom;
+                if(arg.children&&arg.children.length){
+                    arg.children.forEach(function (v,_k) {
+                        Compile(parentExist,componentSite,v,site,_k,inherit,_dom,JSON.stringify(a.nodePath),[0])
+                    })
+                }
+            }
+            function Compile(parentExist,componentSite,port,pSite,sIndex,inherit,parentDom,dPS,dPA){
+                var uid=port[0],arg=port[1],_this=oD[uid],loop,exist,site=pSite+sIndex,b,a={inherit:{},attribute:{}};
+                console.log(_this);
+                A.init({site:site,parentSite:pSite,addr:aO});
+                if(_this.hasOwnProperty('componentData')){
+                    componentSite = site;
+                    !a.hasOwnProperty('componentData')&&(a.componentData=[]);
+                    var _o=_this.componentData;
+                    (function objCopy(o, n) {
+                        var k,v,t;
+                        for(k in o){
+                            if(o.hasOwnProperty(k)){
+                                v=o[k];
+                                t=typeof v;
+                                if(t==='object'){
+                                    n[k]=n[k]||new v.constructor();
+                                    objCopy(v,n[k])
+                                }else if(t==='string') {
+                                    n[k]=A.bind(b)(v);
+                                    n[k]=n[k][0]?n[k][1]:new Function('return '+n[k][1])()
+                                }
+                            }
+                        }
+                    })();
+                }
+                a.componentSite=componentSite;
+
+                if(arg&&arg.loop) {
+                    //index:[name],item:{name:[name],source:[site],sequence:[,,,]}
+                    //loop=analytic(site,'loop',arg.loop,aO,arg.data,arg.index,arg.item);
+                    a.inherit.index = arg.index||'index';
+                    loop = A(arg.loop, false, 'loop');
+                    if (loop[0]) {
+                        a.inherit[arg.item||'item'] = loop[1] + '[' + a.inherit.index + ']';
+                        a.loop = str2Fn(loop[1]);
+                    } else {
+                        a.inherit[arg.item||'item'] = JSON.stringify(loop[1]) + '[' + a.inherit.index + ']';
+                        a.loop = loop[1];
+                    }
+                    //domIndex:componentDom[1][3+index.a+2][index.b]
+                }
+                if(arg&&arg.exist){
+                    exist=A(arg.exist,false,'exist');
+                    if(exist[0]){
+                        a.exist=str2Fn(exist[1])
+                    }else {
+                        a.exist=exist[1]
+                    }
+                }
+                if(arg&&(arg.loop!==undefined||arg.exist!==undefined)){
+                    //不一定是变量的情况额外判定
+                    dPA.push(site)
+                }
+                else {
+                    dPA[0]+=1
+                }
+                var _attr=Object.assign({},_this.attr||{},arg&&arg.attribute||{});
+                if(_attr&&Object.keys(_attr).length){
+                    for(var k in _attr){
+                        var _v=A(_attr[k],false,k);
+                        a.attribute[k]=_v[0]?str2Fn(_v[1]):_v[1]
+                    }
+                }
+                if(A.node){
+                    Object.assign(A.node,a);
+                    A.node.source=componentSite;
+                }
+                if(arg&&arg.loop){
+                    var _loop= a.loop instanceof Function ? a.loop.bind(sD)(inherit):a.loop;
+                    a.nodePath=JSON.parse(dPS).push(dPA);
+                    if(_loop&&_loop.length){
+                        a.loopArray=[];
+                        _loop.forEach(function (k) {
+                            inherit[a.inherit.index]=k;
+                            domAddAttr(parentExist,componentSite,parentDom,site,k,_this,a,inherit,dPS,dPA)
+                        })
+                    }
+                }
+                else {
+                    var _a=JSON.parse(dPS);
+                    _a.push(dPA);
+                    a.nodePath=_a;
+                    domAddAttr(parentExist,componentSite,parentDom,site,null,_this,a,inherit,dPS,dPA)
+                }
+            }
+            Compile(true,null,['body',{}],'',0,_inherit,null,'[]',[0])
+        })(originalData,{data:stateData},addrObject)
+    }
+</script>
+</body>
+</html>
