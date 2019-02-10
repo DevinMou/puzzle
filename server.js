@@ -4,7 +4,7 @@ const path = require('path');
 const url = require('url');
 const tool =require('./tool');
 const hostname = '127.0.0.1';
-const port = 3001;
+const port = 3002;
 const server = http.createServer(function(req,res){
   let referer = req.headers['referer'];
   console.log('referer:',referer,'pathname:',url.parse(req.url).pathname);
